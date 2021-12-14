@@ -77,7 +77,7 @@ class _GalleryViewerState extends State<GalleryViewer> {
                   itemCount: file.length,
                   primary: false,
                   shrinkWrap: true,
-                  itemBuilder: (context, index) =>buildCardImage(index),
+                  itemBuilder: (context, index) =>file.isEmpty?Text("No Images Addesd yet !",style: TextStyle(fontSize: 24,fontWeight: FontWeight.w700,color:Color.fromARGB(255, 122, 129, 220)),):buildCardImage(index),
                 ),
               ),
             ),

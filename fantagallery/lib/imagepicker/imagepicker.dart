@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+
 
 List<File> imageList = [];
 
@@ -34,6 +36,7 @@ class _PickImageState extends State<PickImage> {
 
       final imageTemporary = File(imagethatpicking.path);
       debugPrint("Image Temporary path is ${imageTemporary}");
+      imageList.add(imageTemporary);
       final base = basename(imageTemporary.toString().trim());
       debugPrint(
           "the File Name is $base\n----------------------------------------------");
@@ -43,9 +46,9 @@ class _PickImageState extends State<PickImage> {
       debugPrint("The Path file going to save is $DirectoryPath");
       final File newImage = await imageTemporary.copy('${DirectoryPath}/$base');
 
-      imageList.add(imageTemporary);
       setState(() {
         this.imagetoStore = imageTemporary;
+        GallerySaver.saveImage(imagetoStore!.path,albumName:'My photos');
       });
     } on PlatformException catch (e) {
       print('Failed To Pick Image : $e');
@@ -54,6 +57,7 @@ class _PickImageState extends State<PickImage> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsFlutterBinding.ensureInitialized();
     return Scaffold(
       backgroundColor: Colors.amberAccent,
       body: Container(
@@ -125,8 +129,8 @@ class _PickImageState extends State<PickImage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {
-                    pickImage(location: ImageSource.gallery);
+                  onPressed: () async {
+                    await pickImage(location: ImageSource.gallery);
                   },
                   icon: const Icon(
                     Icons.image,
@@ -139,8 +143,9 @@ class _PickImageState extends State<PickImage> {
                   width: 30,
                 ),
                 IconButton(
-                    onPressed: () {
-                      pickImage(location: ImageSource.camera);
+                    onPressed: () async {
+                      // await getPermission(ImageSource.camera);
+                      pickImage(location:ImageSource.camera);
                     },
                     icon: const Icon(
                       Icons.camera,
@@ -184,6 +189,15 @@ class _PickImageState extends State<PickImage> {
       ),
     );
   }
+  // getPermission(location) async{
+  //   var status = await Permission.camera.status;
+  //   if(!status.isGranted){
+  //     PermissionStatus permissionStatus = await Permission.camera.request();
+  //     print("\n--------------------------\nPermission Status is ${permissionStatus.isGranted}\n------------------------");
+  //   }else{
+  //     pickImage(location: location);
+  //   }
+  // }
 }
 
 // String newPath = "";
